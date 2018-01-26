@@ -1,0 +1,23 @@
+.exp-bar {
+  width: 85%;
+  height: 25px;
+  background-color: lightpink;
+  position: relative;
+}
+
+.bar-filled {
+  background-color: hotpink;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transition: width .3s ease-in-out;
+}
+
+.percentage {
+  color: white;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 3px;
+}

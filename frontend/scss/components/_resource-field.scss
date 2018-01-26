@@ -1,0 +1,22 @@
+.resource-field {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .building-holder {
+    width: 32%;
+    margin-bottom: 1rem;
+  }
+
+  .building {
+    background-color: red;
+    width: 100%;
+    height: 170px;
+    margin: 5px;
+    padding: 1rem;
+  }
+
+  .harvestable-building {
+    cursor: pointer;
+  }
+}
