@@ -2,9 +2,22 @@
   <div class="building-holder" v-if="resource">
     <div class="building harvestable-building" @click="buildingClicked">
       <i :class="fontAwesomeClass"></i> {{ resource.title }} - {{ resource.level }}
-      <building-description :description="resource.description"></building-description>
+      <ul>
+        <li>
+          <i class="fab fa-pagelines"></i> {{ costToLevel.grain }}
+        </li>
+        <li>
+          <i class="fas fa-tree"></i> {{ costToLevel.wood }}
+        </li>
+        <li>
+          <i class="fas fa-cubes"></i> {{ costToLevel.iron }}
+        </li>
+      </ul>
+      <button class="btn btn-link btn-levelup" v-tooltip="{content: (!canLevelUp) ? 'Insufficient resources' : ''}" :disabled="!canLevelUp" @click.prevent="levelUp">
+        <i class="fas fa-plus-circle"></i>
+      </button>
+      <button v-tooltip="{content: resource.description}" class="btn btn-link btn-tooltip"><i class="fas fa-question-circle"></i></button>
     </div>
-    <button :disabled="!canLevelUp" @click.prevent="levelUp">Level up g: {{ costToLevel.grain }} w: {{ costToLevel.wood }} i: {{ costToLevel.iron }}</button>
 
     <mouse-notification
       :staticXpos="n.x"
@@ -19,14 +32,12 @@
 import { mapActions, mapGetters } from 'vuex'
 import EventBus from '@/eventbus'
 import MouseNotification from '@/components/Notifications/MouseNotification'
-import BuildingDescription from './BuildingDescription'
 
 export default {
   name: 'BuildingHarvestable',
   props: ['name'],
   components: {
-    MouseNotification,
-    BuildingDescription
+    MouseNotification
   },
   data () {
     return {
@@ -75,10 +86,18 @@ export default {
       return false
     },
     costToLevel () {
+      if (this.resource.level >= 1) {
+        return {
+          grain: Math.round(this.resource.baseCost.grain * (1.15 * this.resource.level)),
+          wood: Math.round(this.resource.baseCost.wood * (1.15 * this.resource.level)),
+          iron: Math.round(this.resource.baseCost.iron * (1.15 * this.resource.level))
+        }
+      }
+
       return {
-        grain: Math.round(this.resource.baseCost.grain * (1.25 * (this.resource.level + 1))),
-        wood: Math.round(this.resource.baseCost.wood * (1.25 * (this.resource.level + 1))),
-        iron: Math.round(this.resource.baseCost.iron * (1.25 * (this.resource.level + 1)))
+        grain: Math.round(this.resource.baseCost.grain),
+        wood: Math.round(this.resource.baseCost.wood),
+        iron: Math.round(this.resource.baseCost.iron)
       }
     }
   },
@@ -100,7 +119,7 @@ export default {
     increaseResource (increaseBy) {
       this.increaseResourceValue({name: this.name, value: increaseBy})
     },
-    levelUp () {
+    levelUp (e) {
       if (this.currentGrain >= this.costToLevel.grain &&
           this.currentWood >= this.costToLevel.wood &&
           this.currentIron >= this.costToLevel.iron ) {
@@ -111,6 +130,7 @@ export default {
             }})
 
             this.increasePlayerExp(Math.round(Math.floor(this.resource.level * .9) + 50))
+            this.addToLog('Building level up!')
       } else {
         this.addToLog('Insufficient resources for level up')
       }
@@ -124,4 +144,3 @@ export default {
   }
 }
 </script>
-

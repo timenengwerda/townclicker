@@ -1,16 +1,30 @@
 <template>
-  <div class="building-holder" v-if="resource && mayShowAndLevel">
+  <div class="building-holder" :class="{'building-disabled' : !mayShowAndLevel}"v-if="resource">
     <div class="building storage-building">
       {{ resource.title }} - {{ resource.level }}
-      <building-description :description="resource.description"></building-description>
+      <ul>
+        <li>
+          <i class="fab fa-pagelines"></i> {{ costToLevel.grain }}
+        </li>
+        <li>
+          <i class="fas fa-tree"></i> {{ costToLevel.wood }}
+        </li>
+        <li>
+          <i class="fas fa-cubes"></i> {{ costToLevel.iron }}
+        </li>
+      </ul>
+      <button class="btn btn-link btn-levelup" v-tooltip="{content: (!canLevelUp) ? 'Insufficient resources' : ''}" :disabled="!canLevelUp" @click.prevent="levelUp">
+        <i class="fas fa-plus-circle"></i>
+      </button>
+      <button v-tooltip="{content: resource.description}" class="btn btn-link btn-tooltip"><i class="fas fa-question-circle"></i></button>
     </div>
-    <button :disabled="!canLevelUp" @click.prevent="levelUp">Level up g: {{ costToLevel.grain }} w: {{ costToLevel.wood }} i: {{ costToLevel.iron }}</button>
   </div>
 </template>
 <script>
 
 import { mapActions, mapGetters } from 'vuex'
 import BuildingDescription from './BuildingDescription'
+import VTooltip from 'v-tooltip'
 export default {
   name: 'Building',
   props: ['name'],
@@ -53,10 +67,12 @@ export default {
       return this.$store.getters.getAmountPerClick(this.name)
     },
     canLevelUp () {
-      if (this.currentGrain >= this.costToLevel.grain &&
-          this.currentWood >= this.costToLevel.wood &&
-          this.currentIron >= this.costToLevel.iron ) {
-            return true
+      if (this.mayShowAndLevel) {
+        if (this.currentGrain >= this.costToLevel.grain &&
+            this.currentWood >= this.costToLevel.wood &&
+            this.currentIron >= this.costToLevel.iron ) {
+              return true
+        }
       }
 
       return false
@@ -73,7 +89,8 @@ export default {
     levelUp () {
       if (this.currentGrain >= this.costToLevel.grain &&
           this.currentWood >= this.costToLevel.wood &&
-          this.currentIron >= this.costToLevel.iron ) {
+          this.currentIron >= this.costToLevel.iron &&
+          this.mayShowAndLevel) {
             this.levelUpResource({name: this.name, cost: {
               grain: this.costToLevel.grain,
               wood: this.costToLevel.wood,
@@ -83,6 +100,7 @@ export default {
             this.increasePlayerExp(Math.round(Math.floor(this.resource.level * 1.1) + 60))
 
             this.setBonusForUser()
+            this.addToLog('Building level up!')
       } else {
         this.addToLog('Insufficient resources for level up')
       }

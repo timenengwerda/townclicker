@@ -2,7 +2,7 @@ import storage from '../store/localStorage'
 import _ from 'lodash'
 // initial state
 const storageObject = {
-  level: 3,
+  level: 0,
   type: 'storage'
 }
 

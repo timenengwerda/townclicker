@@ -1,8 +1,8 @@
 import storage from '../store/localStorage'
 import _ from 'lodash'
 const defaultObject = {
-  value: 2500, // current amount
-  level: 3,
+  value: 0, // current amount
+  level: 0,
   type: 'harvestable',
   multiplier: 0,
   description: ''
@@ -13,9 +13,9 @@ grainObject.name = 'grain'
 grainObject.title = 'Farm'
 grainObject.description = 'Increases food production per second <br> <small>A random building will be demoted every second if production per second is less than zero.</small>'
 grainObject.baseCost = {
-  grain: 50,
-  wood: 20,
-  iron: 10
+  grain: 40,
+  wood: 15,
+  iron: 11
 }
 
 let woodObject = _.cloneDeepWith(defaultObject)
@@ -23,9 +23,9 @@ woodObject.name = 'wood'
 woodObject.title = 'Forest'
 woodObject.description = 'Increases wood production per second'
 woodObject.baseCost = {
-  grain: 30,
-  wood: 70,
-  iron: 40
+  grain: 22,
+  wood: 50,
+  iron: 35
 }
 
 let ironObject = _.cloneDeepWith(defaultObject)
@@ -33,9 +33,9 @@ ironObject.name = 'iron'
 ironObject.title = 'Iron mine'
 ironObject.description = 'Increases iron production per second'
 ironObject.baseCost = {
-  grain: 35,
-  wood: 70,
-  iron: 10
+  grain: 28,
+  wood: 35,
+  iron: 53
 }
 
 let storageObject = null

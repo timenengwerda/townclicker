@@ -4,10 +4,16 @@ import Vue from 'vue'
 import App from './App'
 import store from './store'
 import { Decimal } from 'decimal.js';
+import VTooltip from 'v-tooltip'
+
+Vue.use(VTooltip)
 
 Vue.config.productionTip = false
 
 Vue.filter('prettifyFixed', function (value) {
+  if (!value) {
+    return 0
+  }
 
   if (value < 1000) {
     return value.toFixed(1)
@@ -17,6 +23,9 @@ Vue.filter('prettifyFixed', function (value) {
 })
 
 Vue.filter('prettify', function (value) {
+  if (!value) {
+    return 0
+  }
 
   if (value < 1000) {
     return value.toFixed(0)

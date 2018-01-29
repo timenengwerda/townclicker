@@ -103,11 +103,12 @@ const mutations = {
       const stuffToStore = {
         level: resource.level
       }
+
       if (resource.multiplier !== null) {
         stuffToStore.multiplier = resource.multiplier
       }
 
-      if (resource.value) {
+      if (resource.value >= 0) {
         stuffToStore.value = resource.value
       }
 
@@ -150,7 +151,6 @@ const getters = {
 
     let perSecond = 0
     if (resource) {
-      // console.log(resource[0].level, resource[0].multiplier)
       perSecond = resource[0].level * ((resource[0].multiplier + 100) / 100)
       if (resourceName === 'grain') {
         const totalWorkers = state.resources.reduce((prevVal, resource) => {
