@@ -19,18 +19,18 @@ const state = {
   ]
 }
 
-const increaseCostOfResource = function (context, resource, resourceName) {
-  // increase the cost of the next level
-  const newGrainCost = Math.round(resource.baseCost['grain'] * (1.35 * resource.level))
-  const newWoodCost = Math.round(resource.baseCost['wood'] * (1.35 * resource.level))
-  const newIronCost = Math.round(resource.baseCost['iron'] * (1.35 * resource.level))
+// const increaseCostOfResource = function (context, resource, resourceName) {
+//   // increase the cost of the next level
+//   const newGrainCost = Math.round(resource.baseCost['grain'] * (1.5 * resource.level))
+//   const newWoodCost = Math.round(resource.baseCost['wood'] * (1.5 * resource.level))
+//   const newIronCost = Math.round(resource.baseCost['iron'] * (1.5 * resource.level))
 
-  context.commit('SET_RESOURCE_COST', {name: resourceName, cost: {
-    grain: newGrainCost,
-    wood: newWoodCost,
-    iron: newIronCost
-  }})
-}
+//   context.commit('SET_RESOURCE_COST', {name: resourceName, cost: {
+//     grain: newGrainCost,
+//     wood: newWoodCost,
+//     iron: newIronCost
+//   }})
+// }
 
 // actions
 const actions = {
@@ -122,7 +122,7 @@ function totalWorkersConsumption(workers) {
 }
 
 function getStorageCapacityByLevel (level) {
-  return (level + 1) * 1000
+  return (level + 1) * 1200
 }
 
 // getters

@@ -1,7 +1,7 @@
 import storage from '../localStorage'
 import EventBus from '@/eventbus'
 
-const expMultiplier = 1000
+const expMultiplier = 1700
 
 // initial state
 const state = {
@@ -38,8 +38,6 @@ const actions = {
       EventBus.$emit('log', 'Level up!')
       context.commit('SET_LEVEL', state.level + 1)
       context.commit('SET_EXP', (newExp - expNeeded))
-      // context.commit('SET_ATK', (state.atk + state.level))
-      // context.commit('SET_DEF', (state.def + state.level))
     } else {
       context.commit('SET_EXP', newExp)
     }

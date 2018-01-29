@@ -1,5 +1,5 @@
 <template>
-  <div class="building-holder" :class="{'building-disabled' : !mayShowAndLevel}"v-if="resource">
+  <div class="building-holder" :class="{'building-disabled' : !mayShowAndLevel}" v-if="resource && mayShowAndLevel">
     <div class="building storage-building">
       {{ resource.title }} - {{ resource.level }}
       <ul>

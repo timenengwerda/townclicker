@@ -16,6 +16,10 @@
       <button class="btn btn-link btn-levelup" v-tooltip="{content: (!canLevelUp) ? 'Insufficient resources' : ''}" :disabled="!canLevelUp" @click.prevent="levelUp">
         <i class="fas fa-plus-circle"></i>
       </button>
+      <button class="btn btn-link" v-tooltip="{content: 'Level up max.'}" :disabled="!canLevelUp" @click.prevent="levelUpMax">
+        <i class="fas fa-plus-circle"></i>
+        Max
+      </button>
       <button v-tooltip="{content: resource.description}" class="btn btn-link btn-tooltip"><i class="fas fa-question-circle"></i></button>
     </div>
 
@@ -88,9 +92,9 @@ export default {
     costToLevel () {
       if (this.resource.level >= 1) {
         return {
-          grain: Math.round(this.resource.baseCost.grain * (1.15 * this.resource.level)),
-          wood: Math.round(this.resource.baseCost.wood * (1.15 * this.resource.level)),
-          iron: Math.round(this.resource.baseCost.iron * (1.15 * this.resource.level))
+          grain: Math.round(this.resource.baseCost.grain * (1.45 * this.resource.level)),
+          wood: Math.round(this.resource.baseCost.wood * (1.45 * this.resource.level)),
+          iron: Math.round(this.resource.baseCost.iron * (1.45 * this.resource.level))
         }
       }
 
@@ -104,7 +108,7 @@ export default {
   methods: {
     buildingClicked (e) {
       this.increaseResource(this.amountPerClick)
-      this.increasePlayerExp(this.amountPerClick)
+      this.increasePlayerExp(Math.round(this.amountPerClick / 2))
       this.notifications.push({
         x: e.clientX,
         y: e.clientY,
@@ -134,6 +138,9 @@ export default {
       } else {
         this.addToLog('Insufficient resources for level up')
       }
+    },
+    levelUpMax (e) {
+      console.log('Maak dit')
     },
     ...mapActions({
       addToLog: 'addToLog',

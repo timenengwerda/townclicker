@@ -13,9 +13,9 @@ grainObject.name = 'grain'
 grainObject.title = 'Farm'
 grainObject.description = 'Increases food production per second <br> <small>A random building will be demoted every second if production per second is less than zero.</small>'
 grainObject.baseCost = {
-  grain: 40,
-  wood: 15,
-  iron: 11
+  grain: 41,
+  wood: 34,
+  iron: 23
 }
 
 let woodObject = _.cloneDeepWith(defaultObject)
@@ -33,7 +33,7 @@ ironObject.name = 'iron'
 ironObject.title = 'Iron mine'
 ironObject.description = 'Increases iron production per second'
 ironObject.baseCost = {
-  grain: 28,
+  grain: 33,
   wood: 35,
   iron: 53
 }
