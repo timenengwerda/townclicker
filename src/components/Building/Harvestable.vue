@@ -67,7 +67,7 @@ export default {
       let simulatedCurrentWood = this.currentWood
 
       while (canStillLevel) {
-        const nextLevel = parseInt(this.resource.level) + counter
+        const nextLevel = (parseInt(this.resource.level) - 1) + counter
 
         // calculate what the resource cost would be for the nextLevel resource
         const grainForNextLevel = this.getResourceCostForLevel('grain', nextLevel)
