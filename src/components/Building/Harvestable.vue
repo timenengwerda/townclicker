@@ -1,24 +1,26 @@
 <template>
   <div class="building-holder" v-if="resource">
-    <div class="building harvestable-building" @click="buildingClicked">
-      <i :class="fontAwesomeClass"></i> {{ resource.title }} - {{ resource.level }}
-      <ul>
-        <li>
-          <i class="fab fa-pagelines"></i> {{ costToLevel.grain }}
-        </li>
-        <li>
-          <i class="fas fa-tree"></i> {{ costToLevel.wood }}
-        </li>
-        <li>
-          <i class="fas fa-cubes"></i> {{ costToLevel.iron }}
-        </li>
-      </ul>
+    <div class="building harvestable-building">
+      <div @click="buildingClicked">
+        <i :class="fontAwesomeClass"></i> {{ resource.title }} - {{ resource.level }}
+        <ul>
+          <li>
+            <i class="fab fa-pagelines"></i> {{ costToLevel.grain }}
+          </li>
+          <li>
+            <i class="fas fa-tree"></i> {{ costToLevel.wood }}
+          </li>
+          <li>
+            <i class="fas fa-cubes"></i> {{ costToLevel.iron }}
+          </li>
+        </ul>
+      </div>
       <button class="btn btn-link btn-levelup" v-tooltip="{content: (!canLevelUp) ? 'Insufficient resources' : ''}" :disabled="!canLevelUp" @click.prevent="levelUp">
         <i class="fas fa-plus-circle"></i>
       </button>
       <button class="btn btn-link" v-tooltip="{content: 'Level up max.'}" :disabled="!canLevelUp" @click.prevent="levelUpMax">
         <i class="fas fa-plus-circle"></i>
-        Max
+        Max ({{maxLevelsToUpdate}})
       </button>
       <button v-tooltip="{content: resource.description}" class="btn btn-link btn-tooltip"><i class="fas fa-question-circle"></i></button>
     </div>
@@ -46,13 +48,61 @@ export default {
   data () {
     return {
       resource: false,
-      notifications: []
+      notifications: [],
+      resourceMultiplier: 1.45
     }
   },
   mounted () {
     this.resource = this.$store.getters.getResourceByName(this.name)
   },
   computed: {
+    maxLevelsToUpdate () {
+      let maxLevels = 0
+      let counter = 1
+      let canStillLevel = true
+
+      // keep track of the resources that will be detracted with every loop
+      let simulatedCurrentGrain = this.currentGrain
+      let simulatedCurrentIron = this.currentIron
+      let simulatedCurrentWood = this.currentWood
+
+      while (canStillLevel) {
+        const nextLevel = parseInt(this.resource.level) + counter
+
+        // calculate what the resource cost would be for the nextLevel resource
+        const grainForNextLevel = this.getResourceCostForLevel('grain', nextLevel)
+        const ironForNextLevel = this.getResourceCostForLevel('iron', nextLevel)
+        const woodForNextLevel = this.getResourceCostForLevel('wood', nextLevel)
+
+        // check if that new resource cost is still enough to level up once
+        const canLevel = this.canLevelUpToLevel({
+          grain: simulatedCurrentGrain,
+          wood: simulatedCurrentWood,
+          iron: simulatedCurrentIron,
+        }, {
+          grain: grainForNextLevel,
+          iron: ironForNextLevel,
+          wood: woodForNextLevel
+        })
+
+        // decrease the simulated resources because every level costs you so the simulated resource will decrease with every level
+        simulatedCurrentGrain = simulatedCurrentGrain - grainForNextLevel
+        simulatedCurrentWood = simulatedCurrentWood - woodForNextLevel
+        simulatedCurrentIron = simulatedCurrentIron - ironForNextLevel
+
+        // if we can still level up, increase the MaxLevels counter,
+        // otherwise stop the loop
+        if (canLevel) {
+          maxLevels++
+        } else {
+          canStillLevel = false
+        }
+
+        counter++
+      }
+
+      return maxLevels
+    },
     fontAwesomeClass () {
       switch (this.resource.name) {
         case 'iron':
@@ -92,9 +142,9 @@ export default {
     costToLevel () {
       if (this.resource.level >= 1) {
         return {
-          grain: Math.round(this.resource.baseCost.grain * (1.45 * this.resource.level)),
-          wood: Math.round(this.resource.baseCost.wood * (1.45 * this.resource.level)),
-          iron: Math.round(this.resource.baseCost.iron * (1.45 * this.resource.level))
+          grain: Math.round(this.resource.baseCost.grain * (this.resourceMultiplier * this.resource.level)),
+          wood: Math.round(this.resource.baseCost.wood * (this.resourceMultiplier * this.resource.level)),
+          iron: Math.round(this.resource.baseCost.iron * (this.resourceMultiplier * this.resource.level))
         }
       }
 
@@ -106,6 +156,18 @@ export default {
     }
   },
   methods: {
+    canLevelUpToLevel(currentResources, costToLevel) {
+      if (currentResources.grain >= costToLevel.grain &&
+          currentResources.wood >= costToLevel.wood &&
+          currentResources.iron >= costToLevel.iron ) {
+            return true
+      }
+
+      return false
+    },
+    getResourceCostForLevel (r, level) {
+      return this.resource.baseCost[r] * (this.resourceMultiplier * level)
+    },
     buildingClicked (e) {
       this.increaseResource(this.amountPerClick)
       this.increasePlayerExp(Math.round(this.amountPerClick / 2))
@@ -123,7 +185,7 @@ export default {
     increaseResource (increaseBy) {
       this.increaseResourceValue({name: this.name, value: increaseBy})
     },
-    levelUp (e) {
+    levelUp (e, isRecursive = false, callback) {
       if (this.currentGrain >= this.costToLevel.grain &&
           this.currentWood >= this.costToLevel.wood &&
           this.currentIron >= this.costToLevel.iron ) {
@@ -134,13 +196,29 @@ export default {
             }})
 
             this.increasePlayerExp(Math.round(Math.floor(this.resource.level * .9) + 50))
-            this.addToLog('Building level up!')
+
+            if (!isRecursive) {
+              this.addToLog('Building level up!')
+            } else {
+              if (callback) {
+                callback(true)
+              }
+            }
       } else {
         this.addToLog('Insufficient resources for level up')
       }
     },
     levelUpMax (e) {
-      console.log('Maak dit')
+      // run this method recursively aslong as this.levelUp method returns true
+      // let the levelup method return a callback when it's saved properly
+      // if there is a callback; run this method again.
+      if (this.canLevelUp) {
+        this.levelUp(e, true, (r) => {
+          if (r) {
+            this.levelUpMax(e)
+          }
+        })
+      }
     },
     ...mapActions({
       addToLog: 'addToLog',
