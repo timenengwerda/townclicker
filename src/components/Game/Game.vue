@@ -36,19 +36,36 @@ export default {
   },
   mounted () {
     this.saveEntireGameState()
-    setInterval(this.saveEntireGameState, 60000)
+
+    setInterval(this.saveEntireGameState, 300000)
+
     this.checkIfGrainIsNegative()
+
     EventBus.$on('log', (msg) => {
       this.addToLog(msg)
     })
+
+    this.setSecondTimers()
   },
   computed: {
     grainPerSecond () {
       return this.$store.getters.gainPerSecond('grain')
     },
+    woodPerSecond () {
+      return this.$store.getters.gainPerSecond('wood')
+    },
+    ironPerSecond () {
+      return this.$store.getters.gainPerSecond('iron')
+    },
     totalGrain () {
       return this.$store.getters.getResourceByName('grain').value
-    }
+    },
+    ...mapGetters({
+      underAttack: 'underAttack',
+      attackAmount: 'attackAmount',
+      playerDef: 'def',
+      lastAttack: 'lastAttack'
+    })
   },
   watch: {
     grainPerSecond (a) {
@@ -62,7 +79,6 @@ export default {
     checkIfGrainIsNegative () {
       if (this.grainPerSecond < 0 && this.totalGrain < 0) {
         if (this.delevelingInterval === null) {
-          console.log('kill')
           // de-level random resource (except for grain itself) every second until the grainproduction is atleast 0 again
           this.delevelingInterval = setInterval(() => {
             this.delevelRandomResource()
@@ -84,13 +100,71 @@ export default {
         this.addToLog(saveMessage)
       }
     },
+    increaseResource (name, increaseBy) {
+      this.increaseResourceValue({name, value: increaseBy})
+    },
+    setSecondTimers () {
+      let secondsPassed = 0
+
+      setInterval(() => {
+        this.increaseResource('grain', this.grainPerSecond)
+        this.increaseResource('wood', this.woodPerSecond)
+        this.increaseResource('iron', this.ironPerSecond)
+
+        if (this.underAttack) {
+          this.villageUnderAttack()
+        } else {
+          if (this.lastAttack > 0) {
+            const lastAttackTime = Math.floor(Date.now() / 1000) - this.lastAttack
+            // Only try to randomize an attack if the lastAttack was more than 600 seconds ago
+            // the playerDef should also be atleast 5(level 3-ish)
+            if (lastAttackTime > 600 && this.playerDef > 5 && secondsPassed > 600) {
+              secondsPassed = 0
+              let randomized = Math.round(Math.random())
+              if (randomized === 1 ) {
+                this.attackVillage()
+              }
+            } else {
+              console.log('attack dodged!')
+            }
+          }
+        }
+
+        secondsPassed++
+      }, 1000)
+    },
+    getRandomInt (min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+    attackVillage () {
+      this.setUnderAttack(true)
+      const amountOfAttackers = this.getRandomInt(this.playerDef * 3, this.playerDef * 12)
+      this.setAttackAmount(Math.round(amountOfAttackers))
+    },
+    villageUnderAttack () {
+      // the hero kills *playerDef* of enemies every second
+      this.setAttackAmount(Math.round(this.attackAmount - this.playerDef))
+      if (this.attackAmount <= 0) {
+        this.setUnderAttack(false)
+        this.setAttackAmount(0)
+        this.setLastAttack(Math.floor(Date.now() / 1000))
+      }
+
+      console.log('Enemy is killing')
+      // the enemies destroy one resource every second (including grain!)
+      this.delevelRandomResource(true)
+    },
     ...mapActions({
       saveAllResourcesToLocalStorage: 'saveAllResourcesToLocalStorage',
       savePlayerToLocalStorage: 'savePlayerToLocalStorage',
       addToLog: 'addToLog',
       addNotification: 'addNotification',
       setMouseCoords: 'setMouseCoords',
-      delevelRandomResource: 'delevelRandomResource'
+      delevelRandomResource: 'delevelRandomResource',
+      increaseResourceValue: 'increaseResourceValue',
+      setUnderAttack: 'setUnderAttack',
+      setAttackAmount: 'setAttackAmount',
+      setLastAttack: 'setLastAttack'
     })
   }
 }

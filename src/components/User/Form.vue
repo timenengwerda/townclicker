@@ -19,8 +19,8 @@ export default {
   props: ['name', 'town'],
   data () {
     return {
-      newName: (this.name) ? this.name : 'Timen',
-      newTown: (this.town) ? this.town : 'Dorp'
+      newName: (this.name) ? this.name : '',
+      newTown: (this.town) ? this.town : ''
     }
   },
   methods: {

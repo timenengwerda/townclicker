@@ -1,5 +1,6 @@
 import storage from '../localStorage'
 import _ from 'lodash'
+import EventBus from '@/eventbus'
 import {grainObject, woodObject, ironObject} from '@/config/harvestable-resources'
 import {grainStorage, woodStorage, ironStorage} from '@/config/storage-resources'
 import {grainMultiply, woodMultiply, ironMultiply, defenseMultiply} from '@/config/multiplying-resources'
@@ -19,29 +20,27 @@ const state = {
   ]
 }
 
-// const increaseCostOfResource = function (context, resource, resourceName) {
-//   // increase the cost of the next level
-//   const newGrainCost = Math.round(resource.baseCost['grain'] * (1.5 * resource.level))
-//   const newWoodCost = Math.round(resource.baseCost['wood'] * (1.5 * resource.level))
-//   const newIronCost = Math.round(resource.baseCost['iron'] * (1.5 * resource.level))
-
-//   context.commit('SET_RESOURCE_COST', {name: resourceName, cost: {
-//     grain: newGrainCost,
-//     wood: newWoodCost,
-//     iron: newIronCost
-//   }})
-// }
-
 // actions
 const actions = {
-  delevelRandomResource (context) {
+  delevelRandomResource (context, includeGrain = false) {
+
     // get a random number and get the resource it goes with
-    const randomResourceIndex = Math.floor(Math.random() * (state.resources.length - 1)) + 1
+    let randomResourceIndex = -1
+    if (includeGrain) {
+      randomResourceIndex = Math.floor(Math.random() * state.resources.length)
+    } else {
+      randomResourceIndex = Math.floor(Math.random() * (state.resources.length - 1)) + 1
+    }
+
     const resourceToDelevel = state.resources[randomResourceIndex]
 
     // if the randomly selected resource is already level 1, the player is lucky; nothing will happen this tick
     if (resourceToDelevel && resourceToDelevel.level > 1) {
+      if (resourceToDelevel.type === 'multiply') {
+        alert('decrease multiplier because this building is being destroyed!')
+      }
       context.commit('SET_RESOURCE_LEVEL', {resource: resourceToDelevel, name: resourceToDelevel.name, level: (resourceToDelevel.level - 1)})
+      EventBus.$emit('log', `${resourceToDelevel.title} was destroyed by invading enemies`)
     }
   },
   increaseResourceValue (context, dto) {
@@ -118,11 +117,11 @@ const mutations = {
 }
 
 function totalWorkersConsumption(workers) {
-  return workers / 5
+  return workers / 6
 }
 
 function getStorageCapacityByLevel (level) {
-  return (level + 1) * 1200
+  return ((level + 1) * 900) + (level * 50)
 }
 
 // getters

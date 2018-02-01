@@ -8,6 +8,12 @@
       <i class="fas fa-bolt"></i> {{ atk }}
     </div>
     <exp-bar></exp-bar>
+
+    <div v-if="underAttack">
+      Your village is under attack!
+      {{ attackAmount }} attackers remaining.
+    </div>
+    
   </div>
 </template>
 <script>
@@ -27,6 +33,8 @@ export default {
       exp: 'exp',
       def: 'def',
       atk: 'atk',
+      underAttack: 'underAttack',
+      attackAmount: 'attackAmount'
     })
   },
   methods: {

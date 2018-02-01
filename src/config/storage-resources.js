@@ -3,7 +3,8 @@ import _ from 'lodash'
 // initial state
 const storageObject = {
   level: 0,
-  type: 'storage'
+  type: 'storage',
+  sprite: '/static/images/sprites/placeholder.png'
 }
 
 let grainStorage = _.cloneDeepWith(storageObject)

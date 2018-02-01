@@ -14,7 +14,7 @@ grainMultiply.title = 'Mill'
 // the bonus multipliers that are gained by leveling this building
 grainMultiply.multipliers = [
   {
-    percentage: 8,
+    percentage: 6,
     resourceToMultiply: 'Grain',
     resourceNameToMultiply: 'grain'
   }
@@ -29,7 +29,7 @@ grainMultiply.requirementBeforeShowing = [{
   type: 'grainStorage',
   level: 2
 }]
-grainMultiply.description = 'Increases food bonus production by 8%'
+grainMultiply.description = 'Increases food bonus production by 6%'
 
 let ironMultiply = _.cloneDeepWith(multiplyObject)
 ironMultiply.name = 'ironMultiply'
@@ -41,12 +41,12 @@ ironMultiply.multipliers = [
     resourceNameToMultiply: 'atk'
   },
   {
-    percentage: 5,
+    percentage: 3,
     resourceToMultiply: 'Iron',
     resourceNameToMultiply: 'iron'
   }
 ]
-ironMultiply.description = 'Increases iron bonus production by 5%<br>Increases hero attack bonus by 5%'
+ironMultiply.description = 'Increases iron bonus production by 3%<br>Increases hero attack bonus by 5%'
 ironMultiply.baseCost = {
   grain: 400,
   wood: 650,
@@ -63,12 +63,12 @@ woodMultiply.name = 'woodMultiply'
 woodMultiply.title = 'Carpenter'
 woodMultiply.multipliers = [
   {
-    percentage: 5,
+    percentage: 3,
     resourceToMultiply: 'Wood',
     resourceNameToMultiply: 'wood'
   }
 ]
-woodMultiply.description = 'Increases wood bonus production by 5%'
+woodMultiply.description = 'Increases wood bonus production by 3%'
 woodMultiply.baseCost = {
   grain: 400,
   wood: 800,

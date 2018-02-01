@@ -1,11 +1,12 @@
 import storage from '../store/localStorage'
 import _ from 'lodash'
 const defaultObject = {
-  value: 0, // current amount
+  value: 50, // current amount
   level: 0,
   type: 'harvestable',
   multiplier: 0,
-  description: ''
+  description: '',
+  sprite: '/static/images/sprites/placeholder.png'
 }
 
 let grainObject = _.cloneDeepWith(defaultObject)
@@ -13,9 +14,9 @@ grainObject.name = 'grain'
 grainObject.title = 'Farm'
 grainObject.description = 'Increases food production per second <br> <small>A random building will be demoted every second if production per second is less than zero.</small>'
 grainObject.baseCost = {
-  grain: 41,
-  wood: 34,
-  iron: 23
+  grain: 31,
+  wood: 37,
+  iron: 38
 }
 
 let woodObject = _.cloneDeepWith(defaultObject)
@@ -23,20 +24,30 @@ woodObject.name = 'wood'
 woodObject.title = 'Forest'
 woodObject.description = 'Increases wood production per second'
 woodObject.baseCost = {
-  grain: 22,
-  wood: 50,
+  grain: 37,
+  wood: 49,
   iron: 35
 }
+// What type needs what level to even start showing this building
+woodObject.requirementBeforeShowing = [{
+  type: 'grain',
+  level: 1
+}]
 
 let ironObject = _.cloneDeepWith(defaultObject)
 ironObject.name = 'iron'
 ironObject.title = 'Iron mine'
 ironObject.description = 'Increases iron production per second'
 ironObject.baseCost = {
-  grain: 33,
-  wood: 35,
-  iron: 53
+  grain: 40,
+  wood: 38,
+  iron: 50
 }
+// What type needs what level to even start showing this building
+ironObject.requirementBeforeShowing = [{
+  type: 'grain',
+  level: 1
+}]
 
 let storageObject = null
 

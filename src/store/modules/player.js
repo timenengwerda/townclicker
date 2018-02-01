@@ -1,7 +1,7 @@
 import storage from '../localStorage'
 import EventBus from '@/eventbus'
 
-const expMultiplier = 1700
+const expMultiplier = 2100
 
 // initial state
 const state = {
