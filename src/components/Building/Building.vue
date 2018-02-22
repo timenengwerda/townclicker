@@ -2,7 +2,7 @@
   <div class="building-holder" v-if="resource && mayShowAndLevel">
     <div class="building" :class="buildingClass">
       <div @click="buildingClicked">
-        <img :src="resource.sprite">
+        <!--<img :src="resource.sprite">-->
         <i :class="fontAwesomeClass"></i> {{ resource.title }} - {{ resource.level }}
         <ul>
           <li>

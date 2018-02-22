@@ -1,9 +1,9 @@
 import storage from '../localStorage'
 import _ from 'lodash'
 import EventBus from '@/eventbus'
-import {grainObject, woodObject, ironObject} from '@/config/harvestable-resources'
-import {grainStorage, woodStorage, ironStorage} from '@/config/storage-resources'
-import {grainMultiply, woodMultiply, ironMultiply, defenseMultiply} from '@/config/multiplying-resources'
+import { grainObject, woodObject, ironObject } from '@/config/harvestable-resources'
+import { grainStorage, woodStorage, ironStorage } from '@/config/storage-resources'
+import { grainMultiply, woodMultiply, ironMultiply, defenseMultiply } from '@/config/multiplying-resources'
 
 const state = {
   resources: [
@@ -22,7 +22,7 @@ const state = {
 
 // actions
 const actions = {
-  delevelRandomResource (context, includeGrain = false) {
+  delevelRandomResource(context, includeGrain = false) {
 
     // get a random number and get the resource it goes with
     let randomResourceIndex = -1
@@ -36,26 +36,26 @@ const actions = {
 
     // if the randomly selected resource is already level 1, the player is lucky; nothing will happen this tick
     if (resourceToDelevel && resourceToDelevel.level > 1) {
-      if (resourceToDelevel.type === 'multiply') {
-        alert('decrease multiplier because this building is being destroyed!')
-      }
-      context.commit('SET_RESOURCE_LEVEL', {resource: resourceToDelevel, name: resourceToDelevel.name, level: (resourceToDelevel.level - 1)})
+      // if (resourceToDelevel.type === 'multiply') {
+      //   alert('decrease multiplier because this building is being destroyed!')
+      // }
+      context.commit('SET_RESOURCE_LEVEL', { resource: resourceToDelevel, name: resourceToDelevel.name, level: (resourceToDelevel.level - 1) })
       EventBus.$emit('log', `${resourceToDelevel.title} was destroyed by invading enemies`)
     }
   },
-  increaseResourceValue (context, dto) {
+  increaseResourceValue(context, dto) {
     const resource = state.resources.find(resource => resource.name === dto.name)
     const storage = state.resources.find(resource => resource.name === `${dto.name}Storage`)
     const storageCapacity = getStorageCapacityByLevel(storage.level)
     const newValue = (resource.value + dto.value)
     // if the new value is lower than capacity, add it to the store
     if (storageCapacity >= newValue) {
-      context.commit('SET_RESOURCE_VALUE', {name: dto.name, value: newValue})
+      context.commit('SET_RESOURCE_VALUE', { name: dto.name, value: newValue })
     } else {
-      context.commit('SET_RESOURCE_VALUE', {name: dto.name, value: storageCapacity})
+      context.commit('SET_RESOURCE_VALUE', { name: dto.name, value: storageCapacity })
     }
   },
-  increaseResourceMultiplier (context, dto) {
+  increaseResourceMultiplier(context, dto) {
     const resourceToAddMultiplierTo = state.resources.find(resource => resource.name === dto.name)
     if (resourceToAddMultiplierTo) {
       context.commit('SET_RESOURCE_MULTIPLIER_PERCENTAGE', {
@@ -64,18 +64,18 @@ const actions = {
       })
     }
   },
-  levelUpResource (context, dto) {
+  levelUpResource(context, dto) {
     const resource = state.resources.find(resource => resource.name === dto.name)
-    context.commit('SET_RESOURCE_LEVEL', {resource, name: dto.name, level: (resource.level + 1)})
+    context.commit('SET_RESOURCE_LEVEL', { resource, name: dto.name, level: (resource.level + 1) })
 
     // decrease all the resource values
     const grainResource = state.resources.find(resource => resource.name === 'grain')
     const woodResource = state.resources.find(resource => resource.name === 'wood')
     const ironResource = state.resources.find(resource => resource.name === 'iron')
 
-    context.commit('SET_RESOURCE_VALUE', {name: 'grain', value: grainResource.value - dto.cost.grain})
-    context.commit('SET_RESOURCE_VALUE', {name: 'wood', value: woodResource.value - dto.cost.wood})
-    context.commit('SET_RESOURCE_VALUE', {name: 'iron', value: ironResource.value - dto.cost.iron})
+    context.commit('SET_RESOURCE_VALUE', { name: 'grain', value: grainResource.value - dto.cost.grain })
+    context.commit('SET_RESOURCE_VALUE', { name: 'wood', value: woodResource.value - dto.cost.wood })
+    context.commit('SET_RESOURCE_VALUE', { name: 'iron', value: ironResource.value - dto.cost.iron })
   },
   saveAllResourcesToLocalStorage(context, dto) {
     context.commit('SAVE_RESOURCES_TO_LOCAL_STORAGE', _.cloneDeepWith(state.resources))
@@ -84,18 +84,18 @@ const actions = {
 
 // mutations
 const mutations = {
-  SET_RESOURCE_VALUE (state, dto) {
+  SET_RESOURCE_VALUE(state, dto) {
     const indexOfResource = state.resources.findIndex(resource => resource.name === dto.name)
     state.resources[indexOfResource].value = dto.value
   },
-  SET_RESOURCE_MULTIPLIER_PERCENTAGE (state, dto) {
+  SET_RESOURCE_MULTIPLIER_PERCENTAGE(state, dto) {
     const indexOfResource = state.resources.findIndex(resource => resource.name === dto.name)
     state.resources[indexOfResource].multiplier = dto.multiplier
   },
-  SET_RESOURCE_LEVEL (state, dto) {
+  SET_RESOURCE_LEVEL(state, dto) {
     dto.resource.level = dto.level
   },
-  SAVE_RESOURCES_TO_LOCAL_STORAGE (state, dto) {
+  SAVE_RESOURCES_TO_LOCAL_STORAGE(state, dto) {
     dto.forEach(resource => {
       // store only the level and (if needed) the multiplier and value.
       // the rest we can extract from the resource itself(Such as basecost etc)
@@ -120,8 +120,8 @@ function totalWorkersConsumption(workers) {
   return workers / 6
 }
 
-function getStorageCapacityByLevel (level) {
-  return ((level + 1) * 900) + (level * 50)
+function getStorageCapacityByLevel(level) {
+  return ((level + 1) * 1200) + (level * 50)
 }
 
 // getters
@@ -153,7 +153,7 @@ const getters = {
       perSecond = resource[0].level * ((resource[0].multiplier + 100) / 100)
       if (resourceName === 'grain') {
         const totalWorkers = state.resources.reduce((prevVal, resource) => {
-            return prevVal + resource.level;
+          return prevVal + resource.level;
         }, 0)
         perSecond -= totalWorkersConsumption(totalWorkers)
       }
@@ -163,12 +163,12 @@ const getters = {
   },
   totalWorkers: state => {
     return state.resources.reduce((prevVal, resource) => {
-        return prevVal + resource.level;
+      return prevVal + resource.level;
     }, 0)
   },
   workerConsumption: state => {
     const totalWorkers = state.resources.reduce((prevVal, resource) => {
-        return prevVal + resource.level;
+      return prevVal + resource.level;
     }, 0)
 
     return totalWorkersConsumption(totalWorkers)

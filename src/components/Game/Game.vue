@@ -111,21 +111,27 @@ export default {
         this.increaseResource('wood', this.woodPerSecond)
         this.increaseResource('iron', this.ironPerSecond)
 
-        if (this.underAttack) {
-          this.villageUnderAttack()
-        } else {
-          if (this.lastAttack > 0) {
-            const lastAttackTime = Math.floor(Date.now() / 1000) - this.lastAttack
-            // Only try to randomize an attack if the lastAttack was more than 600 seconds ago
-            // the playerDef should also be atleast 5(level 3-ish)
-            if (lastAttackTime > 600 && this.playerDef > 5 && secondsPassed > 600) {
-              secondsPassed = 0
-              let randomized = Math.round(Math.random())
-              if (randomized === 1 ) {
-                this.attackVillage()
+        // the playerDef should also be atleast 5(level 3-ish)
+        if (this.playerDef > 5 ) {
+          if (this.underAttack) {
+            this.villageUnderAttack()
+          } else {
+            if (!this.lastAttack) {
+              this.setLastAttack(Math.floor(Date.now() / 1000))
+            }
+
+            if (this.lastAttack > 0) {
+              const lastAttackTime = Math.floor(Date.now() / 1000) - this.lastAttack
+              // Only try to randomize an attack if the lastAttack was more than 600 seconds ago
+              if (lastAttackTime > 600 && secondsPassed > 600) {
+                secondsPassed = 0
+                let randomized = Math.round(Math.random())
+                if (randomized === 1 ) {
+                  this.attackVillage()
+                }
+              } else {
+                console.log('attack dodged!')
               }
-            } else {
-              console.log('attack dodged!')
             }
           }
         }

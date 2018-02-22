@@ -100,10 +100,10 @@ defenseMultiply.baseCost = {
 defenseMultiply.requirementBeforeShowing = [{
   type: 'iron',
   level: 2
-},{
+}, {
   type: 'wood',
   level: 2
-},{
+}, {
   type: 'grain',
   level: 2
 }]
@@ -123,6 +123,11 @@ if (storage.get('woodMultiply')) {
 if (storage.get('ironMultiply')) {
   storageObject = JSON.parse(storage.get('ironMultiply'))
   ironMultiply.level = storageObject.level
+}
+
+if (storage.get('defenseMultiply')) {
+  storageObject = JSON.parse(storage.get('defenseMultiply'))
+  defenseMultiply.level = storageObject.level
 }
 
 export {
